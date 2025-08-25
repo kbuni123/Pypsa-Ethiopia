@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  pypsa-ethiopia-app:
+    build: .
+    container_name: pypsa-ethiopia-streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./pypsa-earth:/app/pypsa-earth
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./logs:/app/logs
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - pypsa-network
+
+  # Optional: PostgreSQL for storing results
+  postgres:
+    image: postgres:15
+    container_name: pypsa-ethiopia-db
+    environment:
+      POSTGRES_DB: pypsa_ethiopia
+      POSTGRES_USER: pypsa_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - pypsa-network
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: pypsa-ethiopia-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - pypsa-network
+
+networks:
+  pypsa-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
