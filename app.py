@@ -638,23 +638,85 @@ def show_run_model_page(app):
         with col2:
             run_model = st.button("▶️ Run Model", type="primary", disabled=not can_run)
         
+        # if run_model:
+        #     with st.spinner("Running energy system optimization..."):
+        #         try:
+        #             # Create network
+        #             st.info("📊 Creating network...")
+        #             network = app.create_pypsa_network_basic()
+                    
+        #             # Set snapshots
+        #             snapshots = pd.date_range(
+        #                 start=config['snapshots']['start'],
+        #                 end=config['snapshots']['end'], 
+        #                 freq='H'
+        #             )
+        #             network.set_snapshots(snapshots[:168])  # Limit to one week for demo
+                    
+        #             st.info("⚡ Optimizing system...")
+         
         if run_model:
             with st.spinner("Running energy system optimization..."):
                 try:
-                    # Create network
-                    st.info("📊 Creating network...")
-                    network = app.create_pypsa_network_basic()
+                    # CREATE NETWORK WITH DEBUGGING
+                    st.info("Step 1: Creating network...")
                     
-                    # Set snapshots
+                    # REPLACE your network creation with this debugged version:
+                    network = create_debugged_network(app.config)  # Use function below
+                    
+                    # DEBUG: Show what was actually created
+                    st.write("NETWORK CREATED:")
+                    st.write(f"- Buses: {len(network.buses)}")
+                    st.write(f"- Generators: {len(network.generators)}")
+                    st.write(f"- Loads: {len(network.loads)}")
+                    st.write(f"- Snapshots: {len(network.snapshots)}")
+                    
+                    # CRITICAL: Check load demand
+                    if hasattr(network, 'loads_t') and 'p_set' in network.loads_t:
+                        total_demand = network.loads_t.p_set.sum().sum()
+                        st.write(f"- Total electricity demand: {total_demand:.1f} MWh")
+                        
+                        if total_demand == 0:
+                            st.error("PROBLEM FOUND: Zero electricity demand")
+                            st.stop()  # Stop execution here
+                        else:
+                            st.success(f"Demand OK: {total_demand:.1f} MWh")
+                    
+                    # CRITICAL: Check generator setup
+                    if len(network.generators) > 0:
+                        extendable = network.generators.p_nom_extendable.sum()
+                        fixed_cap = network.generators.p_nom.sum()
+                        st.write(f"- Extendable generators: {extendable}")
+                        st.write(f"- Fixed capacity: {fixed_cap:.1f} MW")
+                        
+                        if extendable == 0 and fixed_cap == 0:
+                            st.error("PROBLEM FOUND: No generator capacity configured")
+                            st.stop()
+                        else:
+                            st.success("Generator capacity OK")
+                    
+                    # Set snapshots (your code was missing this in run_model)
+                    config = st.session_state.model_config
                     snapshots = pd.date_range(
                         start=config['snapshots']['start'],
                         end=config['snapshots']['end'], 
                         freq='H'
                     )
-                    network.set_snapshots(snapshots[:168])  # Limit to one week for demo
+                    network.set_snapshots(snapshots[:168])  # Your original code
+                    st.write(f"Snapshots updated to: {len(network.snapshots)} hours")
                     
-                    st.info("⚡ Optimizing system...")
-                    results = app.solve_network(network)
+                    # OPTIMIZATION WITH DEBUGGING
+                    st.info("Step 2: Running optimization...")
+                    
+                    # REPLACE your solve_network call with this:
+                    results = solve_network_with_debug(app, network)  # Use function below
+                    
+                    # Show detailed results
+                    st.write("OPTIMIZATION RESULTS:")
+                    st.write(f"- Status: {results.get('status', 'unknown')}")
+                    st.write(f"- Objective: ${results.get('objective', 0):,.2f}")
+                       
+                    # results = app.solve_network(network)
                     
                     if results['status'] == 'ok':
                         st.success("✅ Optimization completed successfully!")
@@ -962,3 +1024,4 @@ def show_analysis_page(app):
 if __name__ == "__main__":
 
     main()
+
