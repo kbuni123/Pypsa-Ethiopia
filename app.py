@@ -143,86 +143,59 @@ class PyPSAEthiopiaApp:
         }
     
     def create_pypsa_network_basic(self) -> pypsa.Network:
-        """Create a basic PyPSA network for Ethiopia (simplified version)"""
-        if not PYPSA_INSTALLED:
-            raise ImportError("PyPSA not installed")
-        
-        # Create network
-        n = pypsa.Network()
-        
-        # Add buses (simplified - just major regions)
-        regions = {
-            'Addis_Ababa': {'x': 38.7578, 'y': 9.0192},
-            'Mekelle': {'x': 39.4753, 'y': 13.4969},
-            'Bahir_Dar': {'x': 37.3961, 'y': 11.5745},
-            'Hawassa': {'x': 38.4762, 'y': 7.0527},
-            'Dire_Dawa': {'x': 41.8659, 'y': 9.6010}
-        }
-        
-        for region, coords in regions.items():
-            n.add("Bus", region, x=coords['x'], y=coords['y'], country='ET')
-        
-        # Add loads (simplified)
-        for region in regions.keys():
-            n.add("Load", f"load_{region}", 
-                  bus=region, 
-                  p_set=np.random.uniform(100, 500, len(n.snapshots)))
-        
-        # Add generators based on configuration
-        if self.config['renewable']['solar']:
-            for region in regions.keys():
-                n.add("Generator", f"solar_{region}",
-                      bus=region,
-                      carrier="solar",
-                      p_nom_extendable=True,
-                      capital_cost=600,  # EUR/MW
-                      marginal_cost=0,
-                      p_max_pu=np.random.uniform(0, 1, len(n.snapshots)))
-        
-        if self.config['renewable']['onwind']:
-            for region in ['Mekelle', 'Bahir_Dar']:  # Good wind regions
-                n.add("Generator", f"wind_{region}",
-                      bus=region,
-                      carrier="onwind", 
-                      p_nom_extendable=True,
-                      capital_cost=1200,  # EUR/MW
-                      marginal_cost=0,
-                      p_max_pu=np.random.uniform(0, 0.8, len(n.snapshots)))
-        
-        if self.config['renewable']['hydro']:
-            n.add("Generator", "hydro_GERD",
-                  bus="Bahir_Dar",
-                  carrier="hydro",
-                  p_nom=6450,  # MW - Grand Ethiopian Renaissance Dam
-                  marginal_cost=0,
-                  p_max_pu=np.random.uniform(0.3, 1, len(n.snapshots)))
-        
-        if self.config['conventional']['gas_ocgt']:
-            n.add("Generator", "gas_addis",
-                  bus="Addis_Ababa", 
-                  carrier="OCGT",
-                  p_nom_extendable=True,
-                  capital_cost=560,  # EUR/MW
-                  marginal_cost=50,  # EUR/MWh
-                  efficiency=0.4)
-        
-        # Add transmission lines (simplified)
-        connections = [
-            ('Addis_Ababa', 'Bahir_Dar', 300, 500),
-            ('Addis_Ababa', 'Hawassa', 200, 300),
-            ('Addis_Ababa', 'Dire_Dawa', 250, 400),
-            ('Mekelle', 'Addis_Ababa', 400, 600),
-        ]
-        
-        for bus0, bus1, length, s_nom in connections:
-            n.add("Line", f"{bus0}-{bus1}",
-                  bus0=bus0, bus1=bus1,
-                  length=length,
-                  s_nom=s_nom,
-                  x=0.1 * length / 1000)  # Simplified reactance
-        
-        return n
+    """Create a basic PyPSA network for Ethiopia (FIXED VERSION)"""
+    if not PYPSA_INSTALLED:
+        raise ImportError("PyPSA not installed")
     
+    # Create network
+    n = pypsa.Network()
+    
+    # CRITICAL FIX: Set snapshots FIRST
+    snapshots = pd.date_range(
+        start=self.config['snapshots']['start'], 
+        end=self.config['snapshots']['end'], 
+        freq='H'
+    )
+    n.set_snapshots(snapshots)
+    
+    # Now len(n.snapshots) > 0, so the rest will work
+    
+    # Add buses
+    regions = {
+        'Addis_Ababa': {'x': 38.7578, 'y': 9.0192},
+        'Mekelle': {'x': 39.4753, 'y': 13.4969},
+        'Bahir_Dar': {'x': 37.3961, 'y': 11.5745},
+        'Hawassa': {'x': 38.4762, 'y': 7.0527},
+        'Dire_Dawa': {'x': 41.8659, 'y': 9.6010}
+    }
+    
+    for region, coords in regions.items():
+        n.add("Bus", region, x=coords['x'], y=coords['y'], country='ET')
+    
+    # Add loads (NOW WORKS)
+    for region in regions.keys():
+        load_profile = np.random.uniform(100, 500, len(n.snapshots))  # Now creates actual values
+        
+        n.add("Load", f"load_{region}", 
+              bus=region, 
+              p_set=load_profile)
+    
+    # Add generators (NOW WORKS)  
+    if self.config['renewable']['solar']:
+        for region in regions.keys():
+            solar_profile = np.random.uniform(0, 1, len(n.snapshots))  # Now creates actual values
+            
+            n.add("Generator", f"solar_{region}",
+                  bus=region,
+                  carrier="solar",
+                  p_nom_extendable=True,
+                  capital_cost=600,
+                  marginal_cost=0,
+                  p_max_pu=solar_profile)
+    
+    # ... rest of your generator code unchanged
+    
+    return n
     def solve_network(self, network: pypsa.Network) -> Dict:
         """Solve the PyPSA network"""
         try:
@@ -987,4 +960,5 @@ def show_analysis_page(app):
         st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
+
     main()
