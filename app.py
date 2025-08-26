@@ -715,7 +715,40 @@ def show_run_model_page(app):
                     st.write("OPTIMIZATION RESULTS:")
                     st.write(f"- Status: {results.get('status', 'unknown')}")
                     st.write(f"- Objective: ${results.get('objective', 0):,.2f}")
-                       
+
+                    st.write("=== NETWORK DEBUG ===")
+                    st.write(f"Snapshots: {len(network.snapshots)}")
+                    st.write(f"Buses: {len(network.buses)}")
+                    st.write(f"Generators: {len(network.generators)}")
+                    st.write(f"Loads: {len(network.loads)}")
+                    
+                    # CRITICAL: Check if loads have actual demand
+                    if hasattr(network, 'loads_t') and 'p_set' in network.loads_t:
+                        total_demand = network.loads_t.p_set.sum().sum()
+                        st.write(f"Total demand: {total_demand:.1f} MWh")
+                        
+                        if total_demand == 0:
+                            st.error("PROBLEM: Zero demand - this will give zero results")
+                            st.write("Load profiles:")
+                            st.dataframe(network.loads_t.p_set.head())
+                            st.stop()
+                        else:
+                            st.success(f"Demand OK: {total_demand:.1f} MWh")
+                    
+                    # CRITICAL: Check generator setup  
+                    extendable = network.generators.p_nom_extendable.sum()
+                    fixed = network.generators.p_nom.sum()
+                    st.write(f"Extendable generators: {extendable}")
+                    st.write(f"Fixed capacity: {fixed:.1f} MW")
+                    
+                    if extendable == 0 and fixed == 0:
+                        st.error("PROBLEM: No generator capacity")
+                        st.dataframe(network.generators)
+                        st.stop()
+                    
+                    # Show generator details
+                    st.write("Generator setup:")
+                    st.dataframe(network.generators)
                     # results = app.solve_network(network)
                     
                     if results['status'] == 'ok':
@@ -1024,4 +1057,5 @@ def show_analysis_page(app):
 if __name__ == "__main__":
 
     main()
+
 
