@@ -236,35 +236,92 @@ class PyPSAEthiopiaApp:
                   x=0.1 * length / 1000)  # Simplified reactance
     
     return n
+    # def solve_network(self, network: pypsa.Network) -> Dict:
+    #     """Solve the PyPSA network"""
+    #     try:
+    #         # Solve
+    #         solver_name = self.config['solver']['name']
+    #         solver_options = self.config['solver']['options']
+            
+    #         status, termination_condition = network.optimize(
+    #             solver_name=solver_name,
+    #             solver_options=solver_options
+    #         )
+            
+    #         # Extract results
+    #         results = {
+    #             'status': status,
+    #             'termination_condition': termination_condition,
+    #             'objective': network.objective,
+    #             'generation': network.generators_t.p.sum().to_dict(),
+    #             'capacity': network.generators.p_nom_opt.to_dict(),
+    #             'load': network.loads_t.p.sum().sum(),
+    #             'curtailment': 0,  # Simplified
+    #             'co2_emissions': 0,  # Simplified
+    #         }
+            
+    #         return results
+            
+    #     except Exception as e:
+    #         logger.error(f"Network optimization failed: {e}")
+    #         return {'status': 'failed', 'error': str(e)}
     def solve_network(self, network: pypsa.Network) -> Dict:
-        """Solve the PyPSA network"""
+        """Solve the PyPSA network - CORRECTED VERSION"""
+        
+        print("Starting optimization...")
+        
+        # Check solver availability
         try:
-            # Solve
-            solver_name = self.config['solver']['name']
-            solver_options = self.config['solver']['options']
+            solver_name = 'highs'  # Force highs for testing
+            status, termination_condition = network.optimize(solver_name=solver_name)
             
-            status, termination_condition = network.optimize(
-                solver_name=solver_name,
-                solver_options=solver_options
-            )
+            print(f"Optimization status: {status}")
+            print(f"Termination: {termination_condition}")
             
-            # Extract results
+            # CRITICAL: Check if optimization actually worked
+            if status != "ok":
+                return {
+                    'status': status,
+                    'error': f'Optimization failed: {termination_condition}',
+                    'objective': 0,
+                    'generation': {},
+                    'capacity': {},
+                    'load': 0
+                }
+            
+            # Extract results CORRECTLY
             results = {
                 'status': status,
                 'termination_condition': termination_condition,
-                'objective': network.objective,
-                'generation': network.generators_t.p.sum().to_dict(),
-                'capacity': network.generators.p_nom_opt.to_dict(),
-                'load': network.loads_t.p.sum().sum(),
-                'curtailment': 0,  # Simplified
-                'co2_emissions': 0,  # Simplified
+                'objective': float(network.objective),  # Make sure it's a number
+                'generation': {},
+                'capacity': {},
+                'load': 0,
+                'curtailment': 0,
+                'co2_emissions': 0,
             }
             
+            # Extract generation - CORRECTED
+            if hasattr(network, 'generators_t') and 'p' in network.generators_t:
+                generation_data = network.generators_t.p.sum()  # Sum over time
+                results['generation'] = {gen: float(val) for gen, val in generation_data.items()}
+            
+            # Extract capacity - CORRECTED  
+            if 'p_nom_opt' in network.generators.columns:
+                capacity_data = network.generators.p_nom_opt
+                results['capacity'] = {gen: float(val) for gen, val in capacity_data.items()}
+            
+            # Extract load
+            if hasattr(network, 'loads_t') and 'p_set' in network.loads_t:
+                results['load'] = float(network.loads_t.p_set.sum().sum())
+            
+            print(f"Final results extracted: {results}")
             return results
             
         except Exception as e:
-            logger.error(f"Network optimization failed: {e}")
+            print(f"Solve failed: {e}")
             return {'status': 'failed', 'error': str(e)}
+
 
 def main():
     """Main application"""
@@ -1097,6 +1154,7 @@ def show_analysis_page(app):
 if __name__ == "__main__":
 
     main()
+
 
 
 
