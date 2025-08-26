@@ -193,7 +193,47 @@ class PyPSAEthiopiaApp:
                   marginal_cost=0,
                   p_max_pu=solar_profile)
     
-    # ... rest of your generator code unchanged
+    if self.config['renewable']['onwind']:
+            for region in ['Mekelle', 'Bahir_Dar']:  # Good wind regions
+                n.add("Generator", f"wind_{region}",
+                      bus=region,
+                      carrier="onwind", 
+                      p_nom_extendable=True,
+                      capital_cost=1200,  # EUR/MW
+                      marginal_cost=0,
+                      p_max_pu=np.random.uniform(0, 0.8, len(n.snapshots)))
+        
+        if self.config['renewable']['hydro']:
+            n.add("Generator", "hydro_GERD",
+                  bus="Bahir_Dar",
+                  carrier="hydro",
+                  p_nom=6450,  # MW - Grand Ethiopian Renaissance Dam
+                  marginal_cost=0,
+                  p_max_pu=np.random.uniform(0.3, 1, len(n.snapshots)))
+        
+        if self.config['conventional']['gas_ocgt']:
+            n.add("Generator", "gas_addis",
+                  bus="Addis_Ababa", 
+                  carrier="OCGT",
+                  p_nom_extendable=True,
+                  capital_cost=560,  # EUR/MW
+                  marginal_cost=50,  # EUR/MWh
+                  efficiency=0.4)
+        
+        # Add transmission lines (simplified)
+        connections = [
+            ('Addis_Ababa', 'Bahir_Dar', 300, 500),
+            ('Addis_Ababa', 'Hawassa', 200, 300),
+            ('Addis_Ababa', 'Dire_Dawa', 250, 400),
+            ('Mekelle', 'Addis_Ababa', 400, 600),
+        ]
+        
+        for bus0, bus1, length, s_nom in connections:
+            n.add("Line", f"{bus0}-{bus1}",
+                  bus0=bus0, bus1=bus1,
+                  length=length,
+                  s_nom=s_nom,
+                  x=0.1 * length / 1000)  # Simplified reactance
     
     return n
     def solve_network(self, network: pypsa.Network) -> Dict:
@@ -1057,5 +1097,6 @@ def show_analysis_page(app):
 if __name__ == "__main__":
 
     main()
+
 
 
