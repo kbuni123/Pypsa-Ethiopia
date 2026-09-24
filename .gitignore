@@ -1,0 +1,29 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Large or re-downloadable data (setup_data.py rebuilds these)
+data/cutouts/
+data/shapes/
+*.nc
+*.gpkg
+
+# Model outputs
+results/
+logs/
+
+# Secrets -- the CDS key belongs in ~/.cdsapirc, never in the repo
+.cdsapirc
+.env
+
+# Old copies of setup_data.py that contain API keys
+setup_data1.py
+setup_data3.py
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

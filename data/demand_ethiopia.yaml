@@ -1,0 +1,105 @@
+# Ethiopian demand, anchored to EEP's FY2025/26 results.
+#
+# GENERATION-SIDE energy: what EEP produced, including domestic T&D losses.
+# The model's transmission is linearised and near-lossless, so generation-side
+# energy is the right quantity to load it with.
+
+base_year:
+  calendar_year: 2026
+  fiscal_year: "2025/26"
+  total_generation_gwh: 35671     # EEP Deputy CEO (Generation), Aug 2026: 35,670.99 GWh.
+                                  # Supersedes 35,734 reported by FSX Business.
+  domestic_share: 0.935           # EEP via The Reporter Ethiopia
+  export_share: 0.065
+  source: "EEP FY2025/26 annual results (The Reporter Ethiopia; FSX Business)"
+  fy_start: "2025-07-08"          # Ethiopian fiscal year runs Hamle 1 to Sene 30
+  fy_end: "2026-07-08"
+
+mining:
+  # Crypto / "data mining": 27% of domestic sales in FY2024/25 (EEP, via
+  # 2merkato). The only EEP-stated share. Bloomberg (Sept 2026) says "almost a
+  # third" of national production, so this sits at the low end.
+  share_of_domestic: 0.27
+  # October 2026 decision. continue = contracted supply; curtail = the 23% of
+  # contracted supply EEP imposed on 15 Sept 2026; terminate = contracts ended.
+  status_multiplier:
+    continue: 1.0
+    curtail: 0.23
+    terminate: 0.0
+  # The model curtails mining before anything else, at the tariff miners pay:
+  # 3.14 US cents/kWh (EEP) x 0.92 EUR/USD (assumption) = ~28.9 EUR/MWh.
+  curtail_price_eur_mwh: 28.9
+  # ASSUMPTION: 90% Addis (ICT Park, Kilinto substation, outskirts), 10%
+  # Hawassa (AmityAge Hawassa; West Data 20 MW at Wolaita Sodo).
+  bus_shares:
+    Addis_Ababa: 0.90
+    Hawassa: 0.10
+  # Mining is FROZEN at base-year level in every scenario year: EEP stopped
+  # issuing new mining permits in August 2025.
+
+exports:
+  # By destination. Contracted exports follow their contract; everything else
+  # is the RESIDUAL of the FY2025/26 export total. All exports are firm: EEP
+  # protects them and curtails mining first.
+  destinations:
+    - name: Kenya
+      bus: Hawassa                 # HVDC to Suswa starts at Wolayta-Sodo
+      # Peak/off-peak MW by contract period. The 400/150 structure starts
+      # December 2026 (EEP notice 16 Sept 2026; Capital Ethiopia 15 Sept 2026),
+      # replacing 200/65. HVDC capacity is 2,000 MW, so the link is not binding.
+      contracts:
+        - {from: "2022-11-01", peak_mw: 200, offpeak_mw: 65}
+        - {from: "2026-12-01", peak_mw: 400, offpeak_mw: 150}
+      # DERIVED: KETRACO reports Kenya importing 3,990 MWh/day under the 200 MW
+      # deal. 200 MW for 18 h + 65 MW for 6 h = 3,990 MWh exactly, so off-peak
+      # is 6 h a day. WHICH 6 hours is an ASSUMPTION: the night, 00:00-06:00.
+      offpeak_hours: [0, 1, 2, 3, 4, 5]
+    - name: Djibouti_and_other
+      bus: Dire_Dawa
+      # RESIDUAL: FY2025/26 exports minus Kenya's contracted FY2025/26 volume.
+      # Flat, frozen. A second interconnector (Galafi-Nagad 230 kV) starts at
+      # Semera, on the Mekelle bus; its completion is unverified, so all
+      # Djibouti flow is kept on the older Dire Dawa route here.
+      residual: true
+  # Not modelled: the 100 MW Tanzania pilot routed through Kenya.
+
+# Firm loads with no published consumption yet. An entry is SKIPPED while
+# annual_gwh is null -- nothing is invented. Fill it in if you find a source.
+firm_loads:
+  - name: railway
+    # Addis Ababa-Djibouti railway: 759 km, 25 kV AC, traction substations on
+    # the national grid, commercial operation since Jan 2018. No public figure
+    # for its consumption was found. Likely candidates: EEP or ERC annual reports.
+    annual_gwh: null
+    bus_shares:
+      Addis_Ababa: 0.3            # ASSUMPTION: Sebeta-Adama double-track section
+      Dire_Dawa: 0.7              # ASSUMPTION: the long single-track eastern run
+
+growth:
+  # ASSUMPTION -- NO SOURCE. Annual growth of NON-MINING domestic demand after
+  # the base year. Left at 0 so nothing is invented: SET THIS DELIBERATELY.
+  # New household connections are added separately by the access module.
+  underlying_rate: 0.0
+
+# ASSUMPTION: regional split of NON-MINING demand. No published EEU regional
+# sales breakdown was found.
+bus_shares:
+  Addis_Ababa: 0.38
+  Hawassa: 0.20
+  Bahir_Dar: 0.13
+  Mekelle: 0.12
+  Dire_Dawa: 0.12
+  Jigjiga: 0.05
+
+# ASSUMPTION: hourly shape of NON-MINING load. Ethiopia publishes no hourly
+# system load. Evening peak reflects lighting-dominated residential use.
+shape:
+  evening_peak_hour: 19
+  evening_peak_width: 2.2
+  evening_peak_weight: 0.38
+  midday_peak_hour: 11
+  midday_peak_width: 3.0
+  midday_peak_weight: 0.10
+  base: 0.62
+  weekend_factor: 0.90
+  seasonal_amplitude: 0.06

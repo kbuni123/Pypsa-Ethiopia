@@ -1,0 +1,46 @@
+# Ethiopian hydropower fleet for the reservoir model.
+#
+# design_gwh      long-run average annual energy (designer/contractor): the
+#                 WATER BUDGET. Inflows are scaled so one average year delivers it.
+# storage_months  usable storage, in months of design energy. Derived from
+#                 live_km3 x head_m x g x 0.9, capped at 12 (a one-year model
+#                 cannot use more). Small plants: 0.25, an assumption.
+# online_year / full_year / first_fraction
+#                 commissioning: 0 before online_year, first_fraction of
+#                 nameplate until full_year, then full.
+# max_drawdown_gwh  used ONLY in drawdown (base-year validation) mode: FY2025/26
+#                 actual minus the long-run water budget, where actual was higher.
+#                 FY2025/26 actuals are EEP's plant shares of 35,670.99 GWh (Deputy
+#                 CEO Ephrem Woldekidan, Aug 2026): GERD 51.5% = 18,370, Gibe III
+#                 17.8% = 6,350, Beles 7% = 2,497.
+#
+# ENERGY BASIS -- three kinds, stated per row:
+#   design    designer/contractor long-run figure
+#   observed  mean of several sourced years, where every one beat the design
+#   normal    plants whose only figure was the 2016/17 CF. That year was
+#             demand-depressed (Gibe III had just created a surplus), so those
+#             CFs are raised to 0.46, EEP's 2014/15 fleet average, the last
+#             normal year. Plants already above 0.46 keep their own CF. Tis
+#             Abay is exempt: its water is diverted to Beles by design.
+#   Checked against two years it was NOT tuned to: the "everything else" group
+#   (all plants except GERD, Gibe III, Beles) comes out +3.3% vs FY2023/24 and
+#   +5.5% vs FY2025/26, where the old 2016/17 floors were -12.5% and -9.4%.
+#
+# Heads marked "assumption" are 0.8 x dam height, standing in for mean
+# operating head. They only size storage; for GERD and Beles the cap binds.
+# 2016/17 CFs are EEP figures from a demand-depressed year: FLOORS.
+name,bus,capacity_mw,design_gwh,storage_months,online_year,full_year,first_fraction,energy_basis,max_drawdown_gwh,live_km3,head_m,lat,lon,source
+GERD,Bahir_Dar,5150,15760,12.0,2022,2025,0.5,design,2610,59.2,124 (assumption),11.214,35.089,Wikipedia (planned output); FY2025/26 actual 18370 GWh (EEP: 51.5% of 35671)
+Gibe III,Hawassa,1870,6500,10.3,2015,2016,0.5,design,0,11.75,194 (assumption),6.844,37.301,Webuild; USGS; AfDB ESIA firm energy 6400; FY2025/26 actual 6350 (EEP: 17.8%)
+Koysha,Hawassa,2160,6460,3.4,2028,2029,0.5,design,0,5.2,143 (assumption),6.584,36.565,Webuild (8x270 MW) + EEP 2026; 77% complete Aug 2026; capacity disputed (1800 MW per PM office 2023); first_fraction 0.5 is an assumption
+Beles,Bahir_Dar,460,2336,12.0,2010,2011,0.5,observed (mean of 2458 in 2016/17; 2052 in FY2023/24; 2497 in FY2025/26),161,9.1,335,11.820,36.920,Studio Pietrangeli (designer); range 1540 firm to 2050 average; storage is Lake Tana
+Gibe I+II cascade,Hawassa,604,2350,5.3,2004,2010,0.3,design,0,0.84,505 (Gibe II only),7.831,37.322,Studio Pietrangeli 2007 combined figure; Gibe II has no storage of its own
+Genale Dawa III,Hawassa,254,1640,11.3,2020,2020,1.0,design,0,2.3,273,5.510,39.718,Stantec via African Energy; MoWIE over 1600
+Tekeze,Mekelle,300,1209,12.0,2009,2010,0.3,normal (CF 0.46; 2016/17 was 0.26),0,5.3,188,13.348,38.742,EEP 2016/17 CF; no design figure found
+Fincha,Addis_Ababa,134,740,0.25,1973,1973,1.0,observed (2016/17 CF 0.63; above 0.46 so kept),0,,,9.561,37.413,EEP 2016/17 CF
+Amarti Neshe,Addis_Ababa,97,391,0.25,2011,2011,1.0,normal (CF 0.46; 2016/17 was 0.13 -- may share Fincha's water),0,,,9.789,37.269,EEP 2016/17 CF
+Melka Wakena,Hawassa,153,617,0.25,1989,1989,1.0,normal (CF 0.46; 2016/17 was 0.30),0,,,7.225,39.462,EEP 2016/17 CF
+Koka,Addis_Ababa,43.2,174,0.25,1960,1960,1.0,normal (CF 0.46; 2016/17 was 0.23),0,,,8.468,39.156,EEP 2016/17 CF
+Awash II+III,Addis_Ababa,64,258,0.25,1966,1971,1.0,normal (CF 0.46; 2016/17 was 0.21),0,,,8.400,39.300,EEP 2016/17 CF
+Tis Abay I+II,Bahir_Dar,84.4,11,0.25,1953,2001,1.0,structural (CF 0.015; water diverted to Beles),0,,,11.486,37.587,EEP 2016/17 CF; water mostly diverted to Beles
+Aba Samuel,Addis_Ababa,6.6,27,0.25,1932,2016,1.0,normal (CF 0.46; 2016/17 was 0.25),0,,,8.780,38.650,EEP 2016/17 CF

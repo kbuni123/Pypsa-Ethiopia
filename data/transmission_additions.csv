@@ -1,0 +1,17 @@
+# Lines built AFTER the base dataset (2006-07 sources), added by hand.
+# base = which network the row PATCHES: wb2007 (fills a gap in the 2006-07
+#        data), osm (fills a gap in OpenStreetMap), or any (e.g. a future line
+#        in neither). OSM already contains GERD's lines, so that row is wb2007
+#        and is skipped when the model runs on OSM -- never counted twice.
+# bus0, bus1 are MODEL bus names. Only lines crossing between model regions
+# matter; a line inside one region is invisible at six-node resolution.
+#
+# GERD evacuation: two 500 kV double-circuit lines GERD -> Dedessa (345 km)
+# and two more Dedessa -> Holeta (275 km), then 400 kV Holeta -> Sebeta II,
+# Sululta II, Akaki II (all Addis). GERD sits on the Bahir_Dar bus and Holeta
+# on Addis_Ababa, so this is four 500 kV circuits on that corridor. Holeta has
+# 7 x 750 MVA transformers.
+# Sources: AidData project 30244 (China Electric / CET credit); Fana Media,
+#          27 Dec 2024 (Holeta substation in operation).
+name,bus0,bus1,voltage_kv,circuits,status,source,base
+GERD-Dedessa-Holeta 500kV,Bahir_Dar,Addis_Ababa,500,4,operating,AidData 30244; Fana Media 2024-12-27,wb2007

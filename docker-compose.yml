@@ -1,0 +1,13 @@
+services:
+  pypsa-ethiopia:
+    build: .
+    container_name: pypsa-ethiopia
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data          # profiles, plants, hydro, demand, OSM grid
+      - ./results:/app/results
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

@@ -1,0 +1,12 @@
+[server]
+port = 8501
+address = "0.0.0.0"
+headless = true
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#1f6f8b"

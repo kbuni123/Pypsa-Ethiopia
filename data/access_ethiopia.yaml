@@ -1,0 +1,52 @@
+# Electricity access and grid expansion.
+#
+# Six nodes cannot route distribution lines to villages. What the model does
+# instead: add the demand that new GRID connections create, at the buses where
+# unconnected people live, and account for the cost of connecting them.
+# Generation and transmission to serve that demand are optimised as usual.
+
+# The access rate depends on the definition -- all four are real:
+survey_2025:
+  # Ethiopian Energy Access Survey 2025 (with the World Bank), as of Jan 2025,
+  # via Ethiopia's National Energy Compact (Mission 300).
+  any_source_households: 0.65      # any electricity source, incl. solar lanterns
+  grid_households: 0.293           # on the national grid
+  offgrid_solar_households: 0.357
+  tier1_plus_population: 0.44      # "basic" service (MTF Tier 1+)
+  date: "2025-01"
+world_bank_2023_population: 0.55   # World Bank: 55% of population -- 2022 figure
+world_bank_year: 2022
+# EEP (Feb 2026): overall access "approximately 55% of the population" by 2026.
+
+# Only GRID connections load the transmission system, so the model builds from
+# grid_households, not from 55% or 65%.
+trajectory:
+  grid_start_year: 2025
+  grid_start: 0.293
+  # ASSUMPTION -- the scenario lever. 0.41 by 2030 is what NEP's target pace of
+  # ~1 million connections a year yields once population growth is counted.
+  # At the ACTUAL recent pace (~250,000/yr) grid access stays near 30%.
+  grid_target_year: 2030
+  grid_target: 0.41
+
+pace_reference:
+  actual_connections_per_year: 250000     # EnDev / EU delegation
+  target_connections_per_year: 1000000    # national target, same source
+
+# Addis: 93% of households grid-connected (EEP, July 2025). Everywhere else
+# gets the uniform residual that reproduces the national grid_start.
+known_grid_access:
+  addis: 0.93
+
+national_population_2023: 132060000   # NOTE: World Bank 2024 value; base year below
+population_base_year: 2024
+population_growth: 0.025              # ASSUMPTION
+household_size: 4.6                   # ASSUMPTION (approximate DHS figure)
+
+# ASSUMPTION: consumption of a newly grid-connected household. 365 kWh/yr is
+# the Multi-Tier Framework Tier 3 threshold (Tier 2: 73, Tier 4: 1,250).
+kwh_per_new_household: 365
+
+# NEP 2.0: US$3.2 bn for grid intensification and expansion, for 8.2 million
+# new grid connections -> ~US$390 per connection (programme average).
+cost_per_household_usd: 390

@@ -1,0 +1,13 @@
+name,bus0,bus1,voltage_kv,circuits,status,source
+OSM 132 kV Addis_Ababa-Bahir_Dar,Addis_Ababa,Bahir_Dar,132.0,4,osm-candidate,OSM ways 580881388 580881389 595694376 595694377; 336 km crossing; unnamed
+OSM 230 kV Addis_Ababa-Bahir_Dar,Addis_Ababa,Bahir_Dar,230.0,1,osm-candidate,OSM ways 400667415; 95 km crossing; unnamed
+OSM 400 kV Addis_Ababa-Bahir_Dar,Addis_Ababa,Bahir_Dar,400.0,2,osm-candidate,OSM ways 693947102; 103 km crossing; unnamed
+OSM 132 kV Addis_Ababa-Dire_Dawa,Addis_Ababa,Dire_Dawa,132.0,2,osm-candidate,OSM ways 669795029 1220610298; 94 km crossing; unnamed
+OSM 230 kV Addis_Ababa-Dire_Dawa,Addis_Ababa,Dire_Dawa,230.0,2,osm-candidate,OSM ways 352576478; 177 km crossing; unnamed
+OSM 230 kV Addis_Ababa-Hawassa,Addis_Ababa,Hawassa,230.0,8,osm-candidate,OSM ways 288569692 580540531 580881400 580881402 581281258; 490 km crossing; unnamed
+OSM 400 kV Addis_Ababa-Hawassa,Addis_Ababa,Hawassa,400.0,3,osm-candidate,OSM ways 220215749 407077364; 443 km crossing; unnamed
+OSM 230 kV Addis_Ababa-Mekelle,Addis_Ababa,Mekelle,230.0,2,osm-candidate,OSM ways 260368544 260751087; 347 km crossing; unnamed
+OSM 230 kV Bahir_Dar-Mekelle,Bahir_Dar,Mekelle,230.0,1,osm-candidate,OSM ways 1062988741; 103 km crossing; unnamed
+OSM 132 kV Dire_Dawa-Jigjiga,Dire_Dawa,Jigjiga,132.0,2,osm-candidate,OSM ways 670305746 670531412; 249 km crossing; names: Harar - Fiq; Harar - Jijiga
+OSM 230 kV Dire_Dawa-Mekelle,Dire_Dawa,Mekelle,230.0,1,osm-candidate,OSM ways 695773622; 64 km crossing; unnamed
+OSM 230 kV Hawassa-Jigjiga,Hawassa,Jigjiga,230.0,1,osm-candidate,OSM ways 670304975; 297 km crossing; names: Dedecha Bela - Gode

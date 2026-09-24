@@ -1,0 +1,22 @@
+# Regional population, Ethiopian Statistical Service projection for July 2023
+# (via Wikipedia's list of regional states by population).
+# The four regions carved out of the former SNNP (South, Central, Sidama,
+# South West) are summed into one row, because GADM and Natural Earth still
+# use the old SNNP boundary. If your GADM file has Sidama separately, the
+# aliases match both and the population is split between them by area.
+#
+# CONFLICT: other sources give very different figures for Afar (2.1-2.5 M)
+# and Somali (6.8-12.6 M). Regional populations in Ethiopia are contested;
+# these are the ESS projections, used for consistency with each other.
+region,population,aliases
+Oromia,40884000,orom
+Amhara,23216000,amha
+SNNP (South+Central+Sidama+South West),25440793,south;snnp;sidam;central
+Somali,6657000,somal
+Tigray,5838000,tigr
+Afar,4576000,afar
+Addis Ababa,3945000,addis
+Benishangul-Gumuz,1251000,bens;beni
+Dire Dawa,551000,dire
+Gambela,525000,gamb
+Harari,283000,harar

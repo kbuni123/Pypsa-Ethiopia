@@ -1,0 +1,14 @@
+# PyPSA-Ethiopia -- all pure-wheel dependencies, no GDAL/geopandas needed
+pypsa>=0.34,<2.0
+highspy>=1.7          # bundled LP/MILP solver, no licence
+linopy>=0.3
+streamlit>=1.32
+plotly>=5.18
+pandas>=2.0
+numpy>=1.24
+netcdf4>=1.6          # for export_to_netcdf
+pyyaml>=6.0
+atlite>=0.2.12       # ERA5 cutouts and capacity-factor aggregation (setup_data.py)
+cdsapi>=0.6          # Copernicus Climate Data Store client
+geopandas>=0.14      # GADM region shapes
+rasterio>=1.3        # atlite dependency for raster handling

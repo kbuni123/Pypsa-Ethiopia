@@ -1,0 +1,59 @@
+# Ethiopian grid-connected generation.
+#
+# SOURCE: Ethiopian Electric Power, "Generation" (https://www.eep.com.et/?page_id=1033)
+# EEP lists 24 stations: 16 hydro totalling 9,213.6 MW, plus wind.
+#
+# capacity_mw   = nameplate, as EEP lists it.
+# available_mw  = capacity actually available in 2025 where a source differs
+#                 from nameplate; otherwise left equal to capacity_mw.
+#
+# IMPORTANT RECONCILIATION NOTE:
+#   Nameplate hydro here sums to ~9,220 MW. The I-TRACK Foundation / MoWE 2025
+#   country assessment reports only 5,268 MW of hydro actually available, and
+#   5,786 MW grid-connected in total. The single largest cause is GERD, which
+#   was generating ~2,350 MW of its 5,150 MW nameplate as of 2025. The rest of
+#   the gap is outages, derating and seasonal water availability that I cannot
+#   attribute plant by plant from public sources.
+#   -> Use available_mw for a "today" run, capacity_mw for a build-out run.
+#      Neither will reconcile exactly with the 5,268 MW figure. Do not present
+#      either as an audited number.
+#
+# bus = which of the six model nodes the plant is assigned to. THIS IS MY
+#       APPROXIMATION by geography, not an EEP assignment. Check it against
+#       your own understanding of the transmission network and edit freely.
+#
+# observed_cf (wind only): EEP 2016/17 actual for Adama I 0.30, Adama II 0.32,
+# Ashegoda 0.21. Assela 0.28 and Ayisha II 0.41 are PLANNED values from the
+# EEP master plan -- neither was operating in 2016/17. Worldometer puts the
+# 2024 wind fleet average at 19.8%, below these.
+#
+# lat/lon are given where I am reasonably confident; blank otherwise. They are
+# only used if you switch to plant-level (rather than bus-level) siting.
+# observed_cf: EEP 2016/17 actual capacity factors for Adama I (0.30), Adama II (0.32)
+# and Ashegoda (0.21). Assela (0.28) and Ayisha II (0.41) are PLANNING values from the
+# same EEP-derived list, not observed. Used to calibrate existing wind farms.
+name,carrier,capacity_mw,available_mw,bus,lat,lon,source,observed_cf
+Grand Ethiopian Renaissance Dam,hydro,5150.0,5150.0,Bahir_Dar,11.215,35.093,EEP; full capacity -- 18.3 TWh in FY2025/26 is impossible at the 2350 MW I-TRACK reported,
+Gibe III,hydro,1870.0,1870.0,Hawassa,6.848,37.300,EEP,
+Beles (Tana Beles),hydro,460.0,460.0,Bahir_Dar,11.600,36.900,EEP,
+Gilgel Gibe II,hydro,420.0,420.0,Hawassa,7.760,37.350,EEP,
+Tekeze,hydro,300.0,300.0,Mekelle,13.350,38.750,EEP,
+Genale Dawa III,hydro,254.0,254.0,Hawassa,5.510,39.718,EEP,
+Gilgel Gibe I,hydro,184.0,184.0,Hawassa,7.850,37.320,EEP,
+Melka Wakena,hydro,153.0,153.0,Hawassa,7.200,39.420,EEP,
+Fincha,hydro,134.0,134.0,Addis_Ababa,9.570,37.350,EEP,
+Amarti Neshe,hydro,97.0,97.0,Addis_Ababa,9.800,37.300,EEP,
+Tis Abay II,hydro,73.0,73.0,Bahir_Dar,11.490,37.580,EEP,
+Koka,hydro,43.2,43.2,Addis_Ababa,8.470,39.150,EEP,
+Awash II,hydro,32.0,32.0,Addis_Ababa,8.400,39.300,EEP,
+Awash III,hydro,32.0,32.0,Addis_Ababa,8.400,39.300,EEP,
+Tis Abay I,hydro,11.4,11.4,Bahir_Dar,11.490,37.580,EEP,
+Aba Samuel,hydro,6.6,6.6,Addis_Ababa,8.780,38.650,EEP,
+Adama II,wind,153.0,153.0,Addis_Ababa,8.500,39.300,EEP,0.32
+Ashegoda,wind,120.0,120.0,Mekelle,13.200,39.600,EEP,0.21
+Assela,wind,100.0,100.0,Hawassa,7.950,39.130,EEP,0.28
+Ayisha II,wind,80.0,80.0,Dire_Dawa,10.750,42.570,EEP (partially complete; 80 MW operating),0.41
+Adama I,wind,51.0,51.0,Addis_Ababa,8.500,39.300,EEP,0.30
+Aluto Langano,geothermal,7.0,7.0,Hawassa,7.780,38.790,I-TRACK 2025 (7 MW geothermal),
+Grid solar PV (unallocated),solar,100.0,100.0,Addis_Ababa,,,I-TRACK 2025 reports 100 MW grid solar; plant and siting not specified - ALLOCATION IS A GUESS,
+Thermal (diesel/HFO),diesel,6.0,6.0,Addis_Ababa,,,I-TRACK 2025 (6 MW thermal); siting not specified,
