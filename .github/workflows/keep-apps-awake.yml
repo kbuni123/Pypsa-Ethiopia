@@ -1,0 +1,39 @@
+name: Keep Streamlit apps awake
+
+on:
+  schedule:
+    # Every 8 hours. Community Cloud sleeps an app after 12h without traffic;
+    # GitHub's scheduler runs late under load, so 8h leaves room for that.
+    - cron: '0 */8 * * *'
+  workflow_dispatch:
+
+# Never let two runs overlap.
+concurrency:
+  group: keep-apps-awake
+  cancel-in-progress: false
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APP_URLS: >-
+        https://electrifying-ethiopia.streamlit.app/
+        https://nile-cascade.streamlit.app/
+        https://pvethiopia.streamlit.app/
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright with Chromium
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save playwright@1.56.0
+          npx playwright install --with-deps chromium
+
+      - name: Wake the apps
+        run: node scripts/wake.js
